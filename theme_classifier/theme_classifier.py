@@ -5,6 +5,7 @@ from nltk import sent_tokenize
 import torch
 import pandas as pd
 import numpy as np
+import os
 from transformers import pipeline
 from utils import load_subtitle
 import nltk
@@ -36,7 +37,7 @@ class ThemeClassifier():
 
             script_batches.append(sent)
         theme_output = self.theme_classifier(
-        script_batches[:2],
+        script_batches,
         self.theme_lists,
         multi_label =  True
         )
@@ -55,9 +56,16 @@ class ThemeClassifier():
     
     def get_themes(self,dataset_path,save_path = None):
 
+        if save_path is not None and os.path.exists(save_path):
+            df = pd.read_csv(save_path)
+            return df
+
         df = load_subtitle(dataset_path)
+      
         output_themes = df['script'].apply(self.get_themes_inference)
         theme_df = pd.DataFrame(output_themes.tolist())
         df[theme_df.columns] = theme_df
         if save_path is not None:
             df.to_csv(save_path,index = False)
+
+        return df
