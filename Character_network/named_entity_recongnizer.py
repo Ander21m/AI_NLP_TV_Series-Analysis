@@ -45,7 +45,7 @@ class NameEntityRecongnizer:
             return df
 
         df = load_subtitle(dataset_path)
-        df= df.head(10)
+        
         df['ners'] = df['script'].apply(self.get_inference)
 
         if save_path is not None:
